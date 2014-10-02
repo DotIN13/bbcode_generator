@@ -1,74 +1,27 @@
-//-----------------------------------------------------------------------------
-// [WoD] BBCode generator
-// Version 1.71, 2011-02-24
-//
-// Script aimed at players of World Of Dungeons. Generates BBCode for in game forum from the content of the current page
-//
-// A new button will appear at the left side of each page (below menu).
-// Pressing this button will generate BBCode representation of current page and append it at the bottom of the page.
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// Changelog
-// 1.71
-// - Adoption for org.
-
-// 1.7
-// - internal optimizations regarding performance (many thanks to Finargol for pointing in right direction)
-//
-// 1.6
-// - now displaying <input> and <textarea> tag texts and images
-// - added ignore/don't display handling for bunch of html tags (which are probably not used by wod, but just to be safe)
-//
-// 1.5
-// - now displaying selected option inside <select> tag
-//
-// 1.4
-// - label instead of span by the checkboxes
-// - shortened all titles, english, french and croatian are ok, waiting for somebody who knows other languages to tell me if it is ok
-// - changed internal representation of localized strings to ease maintenance
-// - internal reorganization
-// - moved "BBCode create" button to the bottom of central part of the page (it confused some other scripts when placed on top, plus some users said it doesn't suit them when placed on top)
-// - added encodeuri to url handling to handle international characters in uris
-// - added Finargol to contributor list (thanks for useful input and testing on french server)
-//
-// 1.3
-// - included french translation and allowed all wod sites to use since should not depend on language used.
-// - added some translations (based on Google translate, corrections most welcome!!!)
-// - changed place where button and options are located to be consistent in popup pages where menu tree on left does not exist
-// - now handling urls without href
-// - fixed some minor formatting issues (newlines and tabs inside text)
-//
-// 1.2
-// - included font color and size in item, hero, group, monster, etc tags
-// - fixed problem with forum post ids
-// - added handling for monuments
-// - after code is created page is positioned at the beginning of created bbcode
-// - created BBCode placed inside text area box for easier copying
-//
-// 1.1 
-// - changed how font size, family and size are handled
-// - added checkboxes so user can decide whether to include font size, family and size into BBCode created (plain text works better with various skins)
-// - added anonymous function around code so not to polute, or interact with, global namespace
-//
-// 1.0 
-// - initial release
-//-----------------------------------------------------------------------------
-
-
 // ==UserScript==
 // @name           BBCode Generator
 // @namespace      tomy
 // @description    Generates BBCode for in game forum from the content of the current page
 // @include        http*://*.world-of-dungeons.*
-// @version        1.7
-// @contributor    Finargol
-// @author         Tomy
-// @copyright      2010+, Tomy
+// @updateURL      https://bitbucket.org/wod/BBCode_Generator/raw/default/scripts/BBCode_Generator.user.js
+// @downloadURL    https://bitbucket.org/wod/BBCode_Generator/raw/default/scripts/BBCode_Generator.user.js
+// @version        1.8
+// @license        MIT License
 // ==/UserScript==
 
 (function() {
+
+var mini=(function(){var b=/(?:[\w\-\\.#]+)+(?:\[\w+?=([\'"])?(?:\\\1|.)+?\1\])?|\*|>/ig,g=/^(?:[\w\-_]+)?\.([\w\-_]+)/,f=/^(?:[\w\-_]+)?#([\w\-_]+)/,j=/^([\w\*\-_]+)/,h=[null,null];function d(o,m){m=m||document;var k=/^[\w\-_#]+$/.test(o);if(!k&&m.querySelectorAll){return c(m.querySelectorAll(o))}if(o.indexOf(",")>-1){var v=o.split(/,/g),t=[],s=0,r=v.length;for(;s<r;++s){t=t.concat(d(v[s],m))}return e(t)}var p=o.match(b),n=p.pop(),l=(n.match(f)||h)[1],u=!l&&(n.match(g)||h)[1],w=!l&&(n.match(j)||h)[1],q;if(u&&!w&&m.getElementsByClassName){q=c(m.getElementsByClassName(u))}else{q=!l&&c(m.getElementsByTagName(w||"*"));if(u){q=i(q,"className",RegExp("(^|\\s)"+u+"(\\s|$)"))}if(l){var x=m.getElementById(l);return x?[x]:[]}}return p[0]&&q[0]?a(p,q):q}function c(o){try{return Array.prototype.slice.call(o)}catch(n){var l=[],m=0,k=o.length;for(;m<k;++m){l[m]=o[m]}return l}}function a(w,p,n){var q=w.pop();if(q===">"){return a(w,p,true)}var s=[],k=-1,l=(q.match(f)||h)[1],t=!l&&(q.match(g)||h)[1],v=!l&&(q.match(j)||h)[1],u=-1,m,x,o;v=v&&v.toLowerCase();while((m=p[++u])){x=m.parentNode;do{o=!v||v==="*"||v===x.nodeName.toLowerCase();o=o&&(!l||x.id===l);o=o&&(!t||RegExp("(^|\\s)"+t+"(\\s|$)").test(x.className));if(n||o){break}}while((x=x.parentNode));if(o){s[++k]=m}}return w[0]&&s[0]?a(w,s):s}var e=(function(){var k=+new Date();var l=(function(){var m=1;return function(p){var o=p[k],n=m++;if(!o){p[k]=n;return true}return false}})();return function(m){var s=m.length,n=[],q=-1,o=0,p;for(;o<s;++o){p=m[o];if(l(p)){n[++q]=p}}k+=1;return n}})();function i(q,k,p){var m=-1,o,n=-1,l=[];while((o=q[++m])){if(p.test(o[k])){l[++n]=o}}return l}return d})();
+
+// FUNCTIONS //////////////////////////////////////////////////////////////////
+if (!this.GM_getValue || this.GM_getValue.toString().indexOf("not supported") > -1) {
+    this.GM_getValue = function(key, def) {
+        return localStorage[key] || def;
+    };
+    this.GM_setValue = function(key, value) {
+        return localStorage[key] = value;
+    };
+};
 
 //-----------------------------------------------------------------------------
 // auxiliary functions
@@ -655,6 +608,8 @@ function CreateBB(node, size, color, font) {
 	}
     
     if (Ignored.indexOf(nodeName) != -1) return text;
+
+	if (node.nodeType == '1' && $(node).css('display').indexOf('none') != -1) return text;
 
     if (NewLineBefore.indexOf(nodeName) != -1) 
         text += "\r\n";
