@@ -3,9 +3,9 @@
 // @namespace      tomy
 // @description    Generates BBCode for in game forum from the content of the current page
 // @include        http*://*.world-of-dungeons.*
-// @updateURL      https://bitbucket.org/wod/BBCode_Generator/raw/default/scripts/BBCode_Generator.user.js
-// @downloadURL    https://bitbucket.org/wod/BBCode_Generator/raw/default/scripts/BBCode_Generator.user.js
-// @version        1.8
+// @updateURL      https://bitbucket.org/wod/bbcode_generator/raw/default/scripts/BBCode_Generator.user.js
+// @downloadURL    https://bitbucket.org/wod/bbcode_generator/raw/default/scripts/BBCode_Generator.user.js
+// @version        1.9
 // @license        MIT License
 // ==/UserScript==
 
