@@ -5,7 +5,7 @@
 // @include        http*://*.world-of-dungeons.*
 // @updateURL      https://bitbucket.org/wod/bbcode_generator/raw/default/scripts/BBCode_Generator.user.js
 // @downloadURL    https://bitbucket.org/wod/bbcode_generator/raw/default/scripts/BBCode_Generator.user.js
-// @version        1.9
+// @version        1.10
 // @license        MIT License
 // ==/UserScript==
 
@@ -494,6 +494,7 @@ function CreateBB(node, size, color, font) {
                 var type = url.replace(/\/.*/g, "");
                 name = url.replace(/.*\//g, "");
                 name = decodeURIComponent(name.replace(/&.*/g, ""));
+                name = name.replace(/^\[.*\]\s?/g, "");
                 if (type == "npc") url = "/wod/spiel/help/npc.php";
                 else url = "/wod/spiel/hero/" + type + ".php";
             }
